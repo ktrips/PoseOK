@@ -631,7 +631,7 @@ async function parseSVG(target) {
     obj  = "ボール";
   }
   //headerMsg.innerHTML = goal;
-  countMsg.innerHTML = obj+"をつかんでリハビリ!";
+  countMsg.innerHTML = obj+"をつかもう!";
 }
     
 bindPage();
@@ -696,7 +696,7 @@ function onfire(move){
     setTimeout(function(){
       //$("#all").css('background-color','white');
       //$("#all").css('background-image', '');
-      countMsg.innerHTML = obj+"をつかんでリハビリ!"; //⭐️parseInt(countbox.innerHTML) + 1;
+      countMsg.innerHTML = obj+"をつかもう!"; //⭐️parseInt(countbox.innerHTML) + 1;
       alerting = false;
     },1000);
 //   }
