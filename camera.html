@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PoseNet - Camera Feed Demo</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url(./hoshi_cover.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .canvas-container {
+            width: 800px;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .camera-canvas {
+            position: absolute;
+            transform: scale(0.5, 0.5);
+            transform-origin: 0 0;
+            left: 10px;
+            top: 10px;
+        }
+
+        .ill-canvas {
+            position: absolute;
+            width: 1800px;
+        }
+
+        #main {
+            left: 0;
+            top: 0;
+            position: absolute;
+        }
+
+        .illustration-canvas {
+            border: 1px solid #eeeeee;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: black;
+        }
+
+        .footer-text {
+            max-width: 600px;
+            text-align: center;
+            margin: auto;
+        }
+
+        .header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            color: black;
+        }
+
+        .header-text {
+            max-width: 1000px;
+            text-align: center;
+            margin: auto;
+        }
+
+
+        @media only screen and (max-width: 600px) {
+
+            .footer-text,
+            .dg {
+                display: none;
+            }
+        }
+
+        /*
+         *  The following loading spinner CSS is from SpinKit project
+         *  https://github.com/tobiasahlin/SpinKit
+         */
+        .sk-spinner-pulse {
+            width: 20px;
+            height: 20px;
+            margin: auto 10px;
+            float: left;
+            background-color: #333;
+            border-radius: 100%;
+            -webkit-animation: sk-pulseScaleOut 1s infinite ease-in-out;
+            animation: sk-pulseScaleOut 1s infinite ease-in-out;
+        }
+
+        @-webkit-keyframes sk-pulseScaleOut {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            }
+
+            100% {
+                -webkit-transform: scale(1.0);
+                transform: scale(1.0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sk-pulseScaleOut {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            }
+
+            100% {
+                -webkit-transform: scale(1.0);
+                transform: scale(1.0);
+                opacity: 0;
+            }
+        }
+
+        .spinner-text {
+            float: left;
+        }
+
+        .star {
+            animation: kirakira 8s linear;
+            color: yellow;
+            display: inline-block;
+            height: 1em;
+            line-height: 1em;
+            position: fixed;
+            top: -1em;
+            z-index: 1000;
+        }
+        @keyframes kirakira {
+            0% {
+                transform:translateY(0) rotateY(0);
+            }
+            100% {
+                transform:translateY(calc(100vh + 1em)) rotateY(3600deg);
+            }
+        }
+
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script>
+(window.onload = function() { //HTML読込後に実行
+setInterval(
+	function(){
+        var countbox   = document.getElementById("countbox");
+        /** var countResult= document.getElementById("countResult");
+        countResult.innerHTML = Math.round(parseInt(countbox.innerHTML)/10);**/
+        var timebox       = document.getElementById("timebox");
+        timebox.innerHTML = parseInt(timebox.innerHTML) + 1;
+        var timeMin       = document.getElementById("timeMin");
+        timeMin.innerHTML = Math.round(parseInt(timebox.innerHTML)/60);
+        var countDis      = document.getElementById("countDis");
+        countDis.innerHTML= Math.round(parseInt(countbox.innerHTML)/500*10)/10;
+        var countCal      = document.getElementById("countCal");
+        countCal.innerHTML= Math.round(parseInt(countbox.innerHTML)*0.4);
+	},
+	1000
+);
+});
+</script>
+<!-- <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+<script src="https://unpkg.com/@tensorflow-models/posenet"></script> -->
+</head>
+
+<body id="all">
+    <div class="header">
+        <div class="header-text">
+          <p><font size="7" weight="bold" align="center" color="blue">
+            <!-- <span id="headerMsg"></span>
+            巨人の星まで大リーグ養成リハビリ Major League Rehab <span id="countResult">22000</span>/500,000</font>-->
+            <span id="countMsg">Start!</span>
+            </font>
+          </p></div>
+        </div>
+    <div id="info" style='display:none'>
+    </div>
+    <div id="loading" style='position: relative; left: 0'>
+        <span class="spinner-text" id="status">
+            Loading PoseNet model...
+        </span>
+        <div class="sk-spinner sk-spinner-pulse"></div>
+    </div>
+    <div class="canvas-container">
+        <div id='main' style='display:none'>
+            <video id="video" playsinline style=" -moz-transform: scaleX(-1);
+            -o-transform: scaleX(-1);
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            display: none;
+            ">
+            </video>
+            <canvas id="output" class="camera-canvas"></canvas>
+            <canvas id="keypoints" class="camera-canvas"></canvas>
+            <canvas id="ill" class="ill-canvas"></canvas>
+            <!-- width="800px" height="600px" style="position:absolute;"></canvas>
+            <dev id="ball" class="star"></dev> -->
+        </div>
+
+        <canvas class="illustration-canvas"></canvas>
+
+    </div>
+    <div class="footer">
+        <div class="footer-text">
+          <p>
+            <span id="timebox">0</span>s <span id="countbox">22000</span>/<span id="timeMin">0</span>min. <span id="countDis">25400</span>km <span id="countCal">11000</span>kcal
+            <!-- <font size="36">Major League Rehab</font>
+            Pose Animator runs TF.js <strong>FaceMesh</strong> and <strong>PoseNet</strong> models to animate SVG illustrations with camera feed / static images.<br>
+            It currently supports <strong>single-pose</strong>, <strong>single-face</strong> detection, and has been tested on Destkop Chrome & iOS Safari.
+            <br>
+            (PoseNet model config - MobileNetV1, output stride 16, quant bytes 2)-->
+          </p>
+        </div>
+      </div>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    -->
+    <script src="js/jquery-3.7.1.min.js"></script> 
+    <!-- integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <script src="camera.js"></script>
+</body>
+
+</html>
